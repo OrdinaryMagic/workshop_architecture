@@ -29,6 +29,12 @@ gem 'activeadmin'
 gem 'activeadmin_addons'
 gem 'devise'
 
+# Сериализация
+gem 'alba', '~> 3.1'
+
+# Декоратор
+gem 'draper', '~> 4.0', '>= 4.0.4'
+
 group :development, :test do
   gem 'bundler-audit'
   gem 'capybara'
