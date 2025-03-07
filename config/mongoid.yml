@@ -1,0 +1,15 @@
+development:
+  clients:
+    default:
+      uri: <%= ENV.fetch('MONGO_URI', 'mongodb://localhost:27017') %>
+
+test:
+  clients:
+    default:
+      database: library_test
+      hosts:
+        - localhost:27017
+      options:
+        read:
+          mode: :primary
+        max_pool_size: 1

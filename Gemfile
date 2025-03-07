@@ -5,6 +5,7 @@ gem 'puma', '>= 6.5.0'
 
 # Базы данных
 gem 'pg'
+gem 'mongoid', '~> 9.0', '>= 9.0.6'
 
 # Многопоточное выполнение
 gem 'parallel'
@@ -34,6 +35,9 @@ gem 'alba', '~> 3.1'
 
 # Декоратор
 gem 'draper', '~> 4.0', '>= 4.0.4'
+
+# Пагинация
+gem 'kaminari-mongoid'
 
 group :development, :test do
   gem 'bundler-audit'
