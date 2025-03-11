@@ -10,8 +10,8 @@ services:
   mongo:
     image: mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: Z76pPAcLvct
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-Z76pPAcLvct}
     ports:
       - 27017
     volumes:
@@ -45,7 +45,7 @@ services:
       POSTGRES_HOST: 'db'
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'postgres'
-      MONGO_URI: 'mongodb://admin:Z76pPAcLvct@mongo:27017'
+      MONGO_URI: ${MONGO_URI:-mongodb://admin:Z76pPAcLvct@mongo:27017}
 volumes:
   db:
   mongodb:
