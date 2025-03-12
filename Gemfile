@@ -39,6 +39,9 @@ gem 'draper', '~> 4.0', '>= 4.0.4'
 # Пагинация
 gem 'kaminari-mongoid'
 
+# Брокер сообщений
+gem 'karafka', '~> 2.0'
+
 group :development, :test do
   gem 'bundler-audit'
   gem 'capybara'

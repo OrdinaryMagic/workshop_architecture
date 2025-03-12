@@ -1,3 +1,11 @@
+x-base-service: &base-service
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: library
+  stdin_open: true
+  tty: true
+
 services:
   db:
     image: postgres:17
@@ -18,12 +26,8 @@ services:
       - mongodb:/data/db
 
   web:
-    tty: true
-    stdin_open: true
-    image: library
+    <<: *base-service
     container_name: library
-    build:
-      context: .
     env_file:
       ".env"
     command: >
@@ -35,7 +39,7 @@ services:
     networks:
       - default
     ports:
-      - "8080:3000"
+      - "3000:3000"
     depends_on:
       - db
       - mongo
@@ -46,6 +50,62 @@ services:
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'postgres'
       MONGO_URI: ${MONGO_URI:-mongodb://admin:Z76pPAcLvct@mongo:27017}
+
+  redpanda:
+    image: redpandadata/redpanda
+    command:
+      - redpanda start
+      - --smp 1
+      - --overprovisioned
+      - --node-id 0
+      - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://redpanda:29092,OUTSIDE://redpanda:9092
+      - --pandaproxy-addr 0.0.0.0:8082
+      - --advertise-pandaproxy-addr redpanda:8082
+    ports:
+      - 8081:8081
+      - 8082:8082
+      - 9092:9092
+      - 29092:29092
+
+  console:
+    image: docker.redpanda.com/redpandadata/console
+    restart: on-failure
+    entrypoint: /bin/sh
+    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:29092"]
+          schemaRegistry:
+            enabled: true
+            urls: ["http://redpanda:8081"]
+        connect:
+          enabled: true
+          clusters:
+            - name: datagen
+              url: http://connect:8083
+    ports:
+      - 8080:8080
+    depends_on:
+      - redpanda
+
+  karafka:
+    <<: *base-service
+    command: bundle exec karafka server
+    env_file:
+      ".env"
+    environment:
+      KARAFKA_BOOT_FILE: '/app/karafka.rb'
+      APP_HOST: ${APP_HOST:-localhost}
+      KAFKATRY_DATABASE_PASSWORD: ${KAFKATRY_DATABASE_PASSWORD:-DYfrvXT4Cuf9AtjMsYA}
+      MONGO_URI: ${MONGO_URI:-mongodb://admin:Z76pPAcLvct@mongo:27017}
+    volumes:
+      - .:/app
+      - ~/.bash_history:/root/.bash_history
+      - ~/.irbrc:/root/.irbrc
+
 volumes:
   db:
   mongodb:

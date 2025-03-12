@@ -7,6 +7,7 @@ class Book
   field :filename, type: String
   field :ext, type: String
   field :folder_id, type: String
+  field :likes_count, type: Integer, default: 0
 
   def authors
     Author.joins(:books_authors).where(books_authors: { book_id: id })

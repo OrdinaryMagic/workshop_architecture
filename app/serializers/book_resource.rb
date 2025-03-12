@@ -3,7 +3,7 @@
 class BookResource
   include Alba::Resource
 
-  attributes :id, :title, :file_path, :published_at
+  attributes :id, :title, :file_path, :likes_count, :published_at
 
   many :authors
   many :genres
